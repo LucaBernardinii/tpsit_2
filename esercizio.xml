@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documentazione>
+    <linguaggio_di_programmazione>Python</linguaggio_di_programmazione>
+    <contenuti_previsti>
+        <strutture_dati_statiche></strutture_dati_statiche>
+        <strutture_dati_dinamiche></strutture_dati_dinamiche>
+        <funzioni></funzioni>
+        <strutture_di_selezione></strutture_di_selezione>
+        <iterazione></iterazione>
+    </contenuti_previsti>
+</documentazione>

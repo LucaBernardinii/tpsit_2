@@ -1,0 +1,12 @@
+<xs: element name="documentazione">
+    <xs: element name="linguaggio_di_programmazione" type="xs:string"/>
+    <xs: complexType>
+        <xs: sequence name="contenuti_previsti">
+            <xs: element name="strutture_dati_statiche" type="xs:string"/>
+            <xs: element name="strutture_dati_dinamiche" type="xs:string"/>
+            <xs: element name="funzioni" type="xs:string"/>
+            <xs: element name="strutture_di_selezione" type="xs:string"/>
+            <xs: element name="iterazione" type="xs:string"/>
+        </xs: sequence>
+    </xs: complexType>
+</xs:element>
