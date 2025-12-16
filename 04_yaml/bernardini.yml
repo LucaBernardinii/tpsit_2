@@ -1,0 +1,10 @@
+rubrica:
+  - nome: "Luca Bernardini"
+  
+    voti:
+      pratico: 5
+      teorico: 7
+  
+    media: 6
+    insufficiente: "no"
+    commento: "Prova sufficiente: migliorare l'aspetto pratico."

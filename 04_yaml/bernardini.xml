@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rubrica>
+    <nome>Luca Bernardini</nome>
+    <voti>
+        <pratico>5</pratico>
+        <teorico>7</teorico>
+    </voti>
+    <media>6</media>
+    <insufficiente>no</insufficiente>
+    <commento>Prova sufficiente: migliorare l'aspetto pratico.</commento>
+</rubrica>

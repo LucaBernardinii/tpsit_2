@@ -1,0 +1,19 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="rubrica">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="nome" type="xs:string"/>
+            <xs:element name="voti">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="pratico" type="xs:int"/>
+                        <xs:element name="teorico" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="media" type="xs:int"/>
+            <xs:element name="insufficiente" type="xs:string"/>
+            <xs:element name="commento" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
