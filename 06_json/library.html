@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biblioteca - Visualizza (senza Python)</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 1rem; }
+    table { border-collapse: collapse; width: 100%; max-width: 960px; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left }
+    th { background: #f7f7f7 }
+    .actions { margin-top: 1rem }
+    .small { font-size: 0.9rem; color: #555 }
+  </style>
+</head>
+<body>
+  <h1>Biblioteca</h1>
+  <div class="actions">
+    <a href="index.html">Aggiungi un altro libro</a>
+  </div>
+  <div id="container" style="margin-top:1rem"></div>
+
+  <script>
+    const STORAGE_KEY = 'biblioteca_books_v1';
+    function loadBooks(){
+      try{ const raw = localStorage.getItem(STORAGE_KEY); return raw?JSON.parse(raw):[] }catch(e){return[]}
+    }
+
+    function render(){
+      const books = loadBooks();
+      const container = document.getElementById('container');
+      if(!books || books.length===0){
+        container.innerHTML = '<p class="small">La biblioteca è vuota.</p>';
+        return;
+      }
+      let html = '<table><thead><tr><th>ID</th><th>Titolo</th><th>Autore</th><th>Lingua</th><th>Edizione</th></tr></thead><tbody>';
+      for(const b of books){
+        html += `<tr><td>${escapeHtml(b.id||'')}</td><td>${escapeHtml(b.titolo||'')}</td><td>${escapeHtml(b.autore||'')}</td><td>${escapeHtml(b.lingua||'')}</td><td>${escapeHtml(b.edizione||'')}</td></tr>`;
+      }
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
