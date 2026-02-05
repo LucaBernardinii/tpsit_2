@@ -7,28 +7,28 @@
 	<style>
 		label { display:block; margin-top:0.5rem }
 		input { width: 100%; padding: 6px; box-sizing: border-box }
-        select { display:block; margin-top:0.5rem }
+		select { display:block; margin-top:0.5rem }
 	</style>
 </head>
 <body>
 	<h1>Inserisci nuovo libro</h1>
 	<p class="small">Questa pagina salva i libri nel file books.json</p>
-
 	<form id="bookForm">
 		<label>Titolo
-			<input id="titolo" required>
+			<input id="titolo" name="titolo" required>
 		</label>
 		<label>Autore
-			<input id="autore" required>
+			<input id="autore" name="autore" required>
 		</label>
 		<label>Casa Editrice
-			<input id="casaEditrice">
+			<input id="casaEditrice" name="casaEditrice">
 		</label>
-        <select name="genere">
+		<select name="genere" id="genere">
 				<option value="narrativa">Narrativa</option>
 				<option value="fantasy">Libro di Fantasy</option>
 				<option value="giallo">Giallo</option>
-			</select>
+		</select>
+		<input type="file" id="fileInput" name="fileInput" accept=".json,application/json">
 		<div class="actions">
 			<button type="submit">Aggiungi</button>
 		</div>
@@ -37,113 +37,120 @@
 	<div id="msg" class="msg" aria-live="polite"></div>
 
 	<script>
-		// Minimal form-only page that appends books to a JSON file when possible.
-		const STORAGE_KEY = 'biblioteca_singlefile_v1';
-		let fileHandle = null; // FileSystemFileHandle during this session (if user picks)
+		const STORAGE_KEY = 'biblioteca_singlefile_v1'; // rimane definito ma non usato per salvataggio
+		let fileHandle = null;
 
-		function loadLocal() {
-			try { const raw = localStorage.getItem(STORAGE_KEY); return raw?JSON.parse(raw):[]; } catch(e){ return []; }
+		const qs = sel => document.querySelector(sel);
+		const showMsg = t => qs('#msg').textContent = t;
+
+		async function readBooksFromHandle(handle) {
+			try { const f = await handle.getFile(); const txt = await f.text(); return txt ? JSON.parse(txt) : []; } catch { return []; }
 		}
-		function saveLocal(books) { localStorage.setItem(STORAGE_KEY, JSON.stringify(books)); }
-
-		function showMsg(t) { document.getElementById('msg').textContent = t; }
-
 		async function writeToHandle(handle, books) {
-			const writable = await handle.createWritable();
-			await writable.write(JSON.stringify(books, null, 2));
-			await writable.close();
+			try {
+				const w = await handle.createWritable();
+				await w.write(JSON.stringify(books, null, 2));
+				await w.close();
+				return true;
+			} catch (e) { console.warn(e); return false; }
 		}
-
-		async function promptForFile() {
-			// prefer showSaveFilePicker when available
+		async function pickHandle() {
 			try {
 				if (window.showSaveFilePicker) {
-					const handle = await window.showSaveFilePicker({ suggestedName: 'books.json', types: [{ description: 'JSON', accept: {'application/json': ['.json'] } }] });
-					return handle;
+					return await window.showSaveFilePicker({
+						suggestedName: 'books.json',
+						types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }]
+					});
 				}
-				// fallback: showOpenFilePicker (user chooses existing file)
 				if (window.showOpenFilePicker) {
-					const [h] = await window.showOpenFilePicker({ types: [{ description: 'JSON', accept: {'application/json': ['.json'] } }], multiple: false });
+					const [h] = await window.showOpenFilePicker({
+						types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+						multiple: false
+					});
 					return h;
 				}
-			} catch (e) {
-				return null;
-			}
+			} catch (e) { /* user cancelled or not available */ }
 			return null;
 		}
 
-		async function appendBook(book) {
-			// Try File System Access API first
-			if (fileHandle) {
-				try {
-					// read existing content
-					let books = [];
-					try {
-						const f = await fileHandle.getFile();
-						const txt = await f.text();
-						books = txt ? JSON.parse(txt) : [];
-					} catch (e) { books = []; }
-					// compute next id
-					const nextId = 1 + (books.reduce((mx,b)=>Math.max(mx, parseInt(b.id||0)), 0));
-					book.id = String(nextId);
-					books.push(book);
-					await writeToHandle(fileHandle, books);
-					showMsg('Aggiunto e salvato in file (handle sessione).');
-					return;
-				} catch (e) {
-					console.warn('Write using handle failed', e);
-					fileHandle = null; // reset and fall back
-				}
-			}
-
-			if ('showSaveFilePicker' in window || 'showOpenFilePicker' in window) {
-				// ask the user for a file (this shows a prompt) and write
-				showMsg('Seleziona o crea il file books.json per salvarlo automaticamente.');
-				const h = await promptForFile();
-				if (h) {
-					fileHandle = h;
-					try {
-						// read existing
-						let books = [];
-						try { const f = await fileHandle.getFile(); const txt = await f.text(); books = txt?JSON.parse(txt):[]; } catch(e){ books = []; }
-						const nextId = 1 + (books.reduce((mx,b)=>Math.max(mx, parseInt(b.id||0)), 0));
-						book.id = String(nextId);
-						books.push(book);
-						await writeToHandle(fileHandle, books);
-						showMsg('Aggiunto e salvato in file (scelto).');
-						return;
-					} catch (e) {
-						console.error(e);
-						showMsg('Impossibile salvare sul file selezionato. I dati verranno memorizzati localmente.');
-					}
-				} else {
-					showMsg('Nessun file selezionato. I dati verranno memorizzati localmente.');
-				}
-			}
-
-			// Fallback: save to localStorage and trigger automatic download
-			const books = loadLocal();
-			const nextId = 1 + (books.reduce((mx,b)=>Math.max(mx, parseInt(b.id||0)), 0));
-			book.id = String(nextId);
-			books.push(book);
-			saveLocal(books);
-			// auto-download updated books.json to give a physical file
-			const blob = new Blob([JSON.stringify(books, null, 2)], { type: 'application/json' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a'); a.href = url; a.download = 'books.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-			showMsg('Aggiunto in localStorage e scaricato books.json (fallback).');
+		function nextIdFor(books) {
+			return 1 + books.reduce((mx, b) => Math.max(mx, Number(b.id || 0)), 0);
 		}
 
-		document.getElementById('bookForm').addEventListener('submit', async (ev) => {
+		async function appendBook(book) {
+				// Try existing handle
+				if (fileHandle) {
+					const books = await readBooksFromHandle(fileHandle);
+					book.id = String(nextIdFor(books));
+					books.push(book);
+					if (await writeToHandle(fileHandle, books)) {
+						showMsg('Aggiunto e salvato in file (handle sessione).');
+						return;
+					}
+					fileHandle = null; // reset and fall back to prompting again
+				}
+	
+				// If FS API available, prompt to choose/create file and save directly
+				if ('showSaveFilePicker' in window || 'showOpenFilePicker' in window) {
+					showMsg('Seleziona o crea il file books.json per salvarlo automaticamente.');
+					const h = await pickHandle();
+					if (h) {
+						fileHandle = h;
+						const books = await readBooksFromHandle(fileHandle);
+						book.id = String(nextIdFor(books));
+						books.push(book);
+						if (await writeToHandle(fileHandle, books)) {
+							showMsg('Aggiunto e salvato in file (scelto).');
+							return;
+						}
+						showMsg('Impossibile salvare sul file selezionato. Operazione annullata.');
+					} else {
+						showMsg('Nessun file selezionato. Operazione annullata.');
+					}
+					return;
+				}
+	
+				// Fallback: if the user selected a file using the <input type="file">, read it and trigger a download with updated content
+				const fileInput = qs('#fileInput');
+				if (fileInput && fileInput.files && fileInput.files.length > 0) {
+					try {
+						const f = fileInput.files[0];
+						const txt = await f.text();
+						const books = txt ? JSON.parse(txt) : [];
+						book.id = String(nextIdFor(books));
+						books.push(book);
+						const blob = new Blob([JSON.stringify(books, null, 2)], { type: 'application/json' });
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = 'books.json';
+						document.body.appendChild(a);
+						a.click();
+						a.remove();
+						URL.revokeObjectURL(url);
+						showMsg('Aggiunto e scaricato books.json (download).');
+						return;
+					} catch (e) {
+						console.warn(e);
+						showMsg('Errore nel file selezionato. Operazione annullata.');
+						return;
+					}
+				}
+	
+				// No File System Access API available and no file selected via input
+				showMsg('API File System non disponibile. Impossibile salvare nel file.');
+			}
+
+		qs('#bookForm').addEventListener('submit', async ev => {
 			ev.preventDefault();
-			const titolo = document.getElementById('titolo').value.trim();
-			const autore = document.getElementById('autore').value.trim();
-			const lingua = document.getElementById('lingua').value.trim();
-			const edizione = document.getElementById('edizione').value.trim();
+			const titolo = qs('#titolo').value.trim();
+			const autore = qs('#autore').value.trim();
+			const casaEditrice = qs('#casaEditrice').value.trim();
+			const genere = qs('select[name="genere"]').value;
+
 			if (!titolo || !autore) { showMsg('Titolo e autore richiesti.'); return; }
 			showMsg('Salvo...');
-			await appendBook({ titolo, autore, lingua, edizione });
-			// clear fields
+			await appendBook({ titolo, autore, casaEditrice, genere });
 			ev.target.reset();
 		});
 	</script>
