@@ -1,18 +1,4 @@
 import socket
-import threading
-
-class InetAddress:
-    """Classe per gestire gli indirizzi IP"""
-    def __init__(self, host):
-        self.host = host
-        try:
-            self.ip = socket.gethostbyname(host)
-        except:
-            self.ip = None
-    
-    def get_host_address(self):
-        return self.ip
-
 
 class ServerSocket:
     """Classe ServerSocket per la comunicazione lato server"""
@@ -33,14 +19,9 @@ class ServerSocket:
         print(f"Client connesso: {client_address}")
         return client_socket, client_address
     
-    def close(self):
-        self.server_socket.close()
-
-
-def handle_client(client_socket):
-    """Gestisce la comunicazione con un client"""
-    while True:
-        try:
+    def handle_client(self, client_socket):
+        """Gestisce la comunicazione con un client"""
+        while True:
             data = client_socket.recv(1024)
             if not data:
                 break
@@ -52,10 +33,11 @@ def handle_client(client_socket):
             response = f"Lunghezza: {len(message)} | Maiuscolo: {message.upper()}"
             
             client_socket.send(response.encode('utf-8'))
-        except:
-            break
+        
+        client_socket.close()
     
-    client_socket.close()
+    def close(self):
+        self.server_socket.close()
 
 
 if __name__ == "__main__":

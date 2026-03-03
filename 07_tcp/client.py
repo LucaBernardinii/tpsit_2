@@ -7,12 +7,9 @@ class Socket:
         self.connected = False
     
     def connect(self, host, port):
-        try:
-            self.socket.connect((host, port))
-            self.connected = True
-            print(f"Connesso a {host}:{port}")
-        except Exception as e:
-            print(f"Errore di connessione: {e}")
+        self.socket.connect((host, port))
+        self.connected = True
+        print(f"Connesso a {host}:{port}")
     
     def send(self, message):
         if self.connected:
