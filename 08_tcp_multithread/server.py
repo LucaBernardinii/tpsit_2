@@ -58,8 +58,3 @@ class MultiServer:
         
         finally:
             self.server_socket.close()
-
-
-if __name__ == "__main__":
-    server = MultiServer()
-    server.start()
