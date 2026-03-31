@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('form').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const campi = {
+        var campi = {
             nome: 'nome',
             cognome: 'cognome',
             data: 'data',
@@ -17,16 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
             anni: 'anni'
         };
         
-        const errori = [];
-        const dati = {};
+        var errori = [];
+        var dati = {};
         
         // Pulisci errori precedenti
-        Object.values(campi).forEach(id => {
-            document.getElementById(id).classList.remove('error');
+        Object.keys(campi).forEach(function(key) {
+            document.getElementById(campi[key]).classList.remove('error');
         });
         
         // Valida Nome
-        const nome = document.getElementById('nome').value.trim();
+        var nome = document.getElementById('nome').value.trim();
         if (!nome || nome.length < 2) {
             errori.push('Nome: minimo 2 caratteri');
             document.getElementById('nome').classList.add('error');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Cognome
-        const cognome = document.getElementById('cognome').value.trim();
+        var cognome = document.getElementById('cognome').value.trim();
         if (!cognome || cognome.length < 2) {
             errori.push('Cognome: minimo 2 caratteri');
             document.getElementById('cognome').classList.add('error');
@@ -44,12 +44,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Data (almeno 14 anni)
-        const data = document.getElementById('data').value;
+        var data = document.getElementById('data').value;
         if (!data) {
             errori.push('Data: obbligatoria');
             document.getElementById('data').classList.add('error');
         } else {
-            const eta = new Date().getFullYear() - new Date(data).getFullYear();
+            var eta = new Date().getFullYear() - new Date(data).getFullYear();
             if (eta < 14) {
                 errori.push('Data: deve avere almeno 14 anni');
                 document.getElementById('data').classList.add('error');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Codice Fiscale
-        const cf = document.getElementById('cf').value.toUpperCase();
+        var cf = document.getElementById('cf').value.toUpperCase();
         if (!cf || cf.length !== 16 || !/^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/.test(cf)) {
             errori.push('Codice Fiscale: formato non valido');
             document.getElementById('cf').classList.add('error');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Classe
-        const classe = document.getElementById('classe').value;
+        var classe = document.getElementById('classe').value;
         if (!classe) {
             errori.push('Classe: obbligatoria');
             document.getElementById('classe').classList.add('error');
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Sezione
-        const sezione = document.getElementById('sezione').value;
+        var sezione = document.getElementById('sezione').value;
         if (!sezione) {
             errori.push('Sezione: obbligatoria');
             document.getElementById('sezione').classList.add('error');
@@ -86,11 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Ripetente
-        const ripetente = document.getElementById('ripetente').checked;
+        var ripetente = document.getElementById('ripetente').checked;
         dati.ripetente = ripetente;
         
         if (ripetente) {
-            const anni = document.getElementById('anni').value;
+            var anni = document.getElementById('anni').value;
             if (!anni || anni < 1 || anni > 3) {
                 errori.push('Anni Ripetuti: numero tra 1 e 3');
                 document.getElementById('anni').classList.add('error');
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Valida Sbocco
-        const sbocco = document.getElementById('sbocco').value;
+        var sbocco = document.getElementById('sbocco').value;
         if (!sbocco) {
             errori.push('Sbocco Professionale: obbligatorio');
             document.getElementById('sbocco').classList.add('error');
@@ -109,9 +109,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Mostra errori o salva
-        const containerErrori = document.getElementById('errori');
+        var containerErrori = document.getElementById('errori');
         if (errori.length > 0) {
-            document.getElementById('listaErrori').innerHTML = errori.map(e => `<div class="error-item">✗ ${e}</div>`).join('');
+            var html = errori.map(function(e) {
+                return '<div class="error-item">✗ ' + e + '</div>';
+            }).join('');
+            document.getElementById('listaErrori').innerHTML = html;
             containerErrori.classList.add('show');
         } else {
             localStorage.setItem('dati', JSON.stringify(dati));
