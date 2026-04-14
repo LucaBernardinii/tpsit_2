@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AJAX: esercizio 1</title>
+    </head>
+    <body>
+        <font color="blue" size="4"><strong>
+        Html con AJAX: caricamento dinamico di documenti</strong> </font><br/>
+            <hr/>
+            <div>
+                <button>documento1</button>
+                <button>documento2</button>
+                <button>documento3</button>
+                <button>documento4</button>
+            </div>
+            <hr/>
+            <div id="zonaDinamica">
+                <em>Qui viene caricato il documento scelto
+            </em> </div>
+        <hr/>
+        <font color="blue" size="3" >Parte inferiore della pagina<br/></font>
+        <script>
+            var documenti = document.getElementsByTagName("button");
+            for (var i = 0; i < documenti.length; i++) {
+                documenti[i].onclick = caricaDocumento;
+            }
+            function caricaDocumento(e) {
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.onreadystatechange = gestisciResponse;
+                httpRequest.open("GET", "http://localhost/hoepli/PHP/docAJAX/" + e.target.innerHTML + ".html", true);
+                httpRequest.send();
+            }
+            function gestisciResponse(e) {
+                if (e.target.readyState == XMLHttpRequest.DONE && e.target.status == 200) {
+                    document.getElementById("zonaDinamica").innerHTML = e.target.responseText;
+                }
+            }
+        </script>
+    </body>
+</html>
