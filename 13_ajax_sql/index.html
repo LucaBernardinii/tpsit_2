@@ -89,28 +89,23 @@
 
     <script>
         function mostra(str) {
-            // Se la stringa è vuota, svuota il div risposta
             if (str.length == 0) {
                 document.getElementById("risposta").innerHTML = "";
                 return;
             }
             
-            // Crea l'oggetto XMLHttpRequest
             if (window.XMLHttpRequest) {
                 xmlhttp = new XMLHttpRequest();
             } else {
-                // Per vecchi browser IE
                 xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
             }
             
-            // Funzione callback quando la risposta è pronta
             xmlhttp.onreadystatechange = function() {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     document.getElementById("risposta").innerHTML = xmlhttp.responseText;
                 }
             }
             
-            // Invia la richiesta GET al server
             xmlhttp.open("GET", "http://localhost:5000/get_comuni?stringa=" + encodeURIComponent(str), true);
             xmlhttp.send();
         }

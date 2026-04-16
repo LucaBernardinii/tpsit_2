@@ -24,15 +24,11 @@ def parse_sql_file(filename):
         
         comuni = []
         
-        # Primo tentativo: formato completo (il database reale ha più comuni)
-        # Pattern per: (1, 'AglieÃ¨', 'aglie', '45.3681', '7.7681', '001', '001', '001001', 0, 0)
-        # Usa un pattern più flessibile
         pattern_completo = r"\(\s*\d+\s*,\s*'([^']*)',\s*'[^']*',\s*'([\d.]+)',\s*'([\d.]+)',\s*'[^']*',\s*'[^']*',\s*'[^']*',\s*[01]\s*,\s*[01]\s*\)"
         
-        # Trova TUTTE le occorrenze
         matches_completo = re.findall(pattern_completo, content)
         
-        if len(matches_completo) > 100:  # Se ne trova molti, usa questi (database reale)
+        if len(matches_completo) > 100:
             for nome, lat, lng in matches_completo:
                 try:
                     comuni.append((nome, float(lat), float(lng), '', ''))
@@ -41,7 +37,6 @@ def parse_sql_file(filename):
             print(f"Caricati {len(comuni)} comuni dal database completo")
             return comuni
         
-        # Se non ha trovato abbastanza, prova il formato semplice
         pattern_semplice = r"\('([^']*)',\s*([\d.]+),\s*([\d.]+),\s*'([^']*)',\s*'([^']*)'\)"
         matches_semplice = re.findall(pattern_semplice, content)
         
@@ -60,7 +55,6 @@ def parse_sql_file(filename):
         traceback.print_exc()
         return []
 
-# Carica i dati dal file SQL (con percorso assoluto)
 COMUNI_DATA = parse_sql_file('localita.sql')
 
 @app.route('/get_comuni', methods=['GET'])
@@ -78,14 +72,11 @@ def get_comuni():
     if not COMUNI_DATA:
         return '<p style="color: red;">Errore: Dati non caricati</p>'
     
-    # Filtra i comuni che iniziano con la stringa fornita (case-insensitive)
     risultati = [c for c in COMUNI_DATA if c[0].lower().startswith(stringa.lower())]
     
-    # Se nessun risultato
     if not risultati:
         return '<p style="color: #ff9800;">Nessuna città trovata con iniziali "<strong>' + stringa + '</strong>"</p>'
     
-    # Costruisci l'HTML per i risultati
     html = '<table border="1" cellpadding="5" style="border-collapse: collapse; width: 100%;">'
     html += '<tr><th>Città</th><th>Latitudine</th><th>Longitudine</th><th>Provincia</th><th>Regione</th></tr>'
     
