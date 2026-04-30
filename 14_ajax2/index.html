@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricerca Prodotti - AJAX</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Ricerca Prodotti</h1>
+        
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="productCode">Codice Prodotto</label>
+                <input 
+                    type="text" 
+                    id="productCode" 
+                    name="productCode" 
+                    placeholder="Es: 123ABC"
+                    maxlength="6"
+                >
+                <div class="error" id="errorMsg"></div>
+                <div class="success" id="successMsg"></div>
+            </div>
+
+            <input type="submit" value="Cerca Prodotto">
+        </form>
+
+        <div class="loading" id="loading">Caricamento...</div>
+
+        <div class="product-info" id="productInfo">
+            <h2>Informazioni Prodotto</h2>
+            <div class="product-detail">
+                <strong>Prezzo:</strong> <span id="price"></span> €
+            </div>
+            <div class="product-detail">
+                <strong>Marca:</strong> <span id="brand"></span>
+            </div>
+            <div class="product-detail">
+                <strong>Modello:</strong> <span id="model"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('searchForm');
+        const productCodeInput = document.getElementById('productCode');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const loading = document.getElementById('loading');
+        const productInfo = document.getElementById('productInfo');
+
+        // Regex pattern: 3 numeri + 3 caratteri alfanumerici
+        const codePattern = /^\d{3}[A-Za-z0-9]{3}$/;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const productCode = productCodeInput.value.trim();
+            
+            // Validazione del formato
+            if (!codePattern.test(productCode)) {
+                errorMsg.textContent = 'Codice non valido. Formato richiesto: 3 cifre + 3 caratteri alfanumerici (Es: 123ABC)';
+                errorMsg.classList.add('show');
+                successMsg.classList.remove('show');
+                productInfo.classList.remove('show');
+                return;
+            }
+
+            errorMsg.classList.remove('show');
+            successMsg.classList.add('show');
+            successMsg.textContent = 'Formato codice valido!';
+            loading.classList.add('show');
+            productInfo.classList.remove('show');
+
+            // Richiesta AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `/search?code=${encodeURIComponent(productCode)}`, true);
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    loading.classList.remove('show');
+                    
+                    if (xhr.status === 200) {
+                        try {
+                            // Parse XML response
+                            const xmlDoc = xhr.responseXML;
+                            
+                            if (xmlDoc && xmlDoc.documentElement.nodeName !== 'parsererror') {
+                                const prezzo = xmlDoc.getElementsByTagName('prezzo')[0].textContent;
+                                const marca = xmlDoc.getElementsByTagName('marca')[0].textContent;
+                                const modello = xmlDoc.getElementsByTagName('modello')[0].textContent;
+
+                                document.getElementById('price').textContent = prezzo;
+                                document.getElementById('brand').textContent = marca;
+                                document.getElementById('model').textContent = modello;
+
+                                productInfo.classList.add('show');
+                                errorMsg.classList.remove('show');
+                            } else {
+                                throw new Error('Errore nel parsing XML');
+                            }
+                        } catch (e) {
+                            errorMsg.textContent = 'Errore nel parsing della risposta';
+                            errorMsg.classList.add('show');
+                            productInfo.classList.remove('show');
+                        }
+                    } else {
+                        errorMsg.textContent = 'Prodotto non trovato nel database';
+                        errorMsg.classList.add('show');
+                        productInfo.classList.remove('show');
+                    }
+                }
+            };
+
+            xhr.onerror = function() {
+                loading.classList.remove('show');
+                errorMsg.textContent = 'Errore nella comunicazione con il server';
+                errorMsg.classList.add('show');
+                productInfo.classList.remove('show');
+            };
+
+            xhr.send();
+        });
+
+        // Validazione in tempo reale
+        productCodeInput.addEventListener('input', function() {
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
