@@ -1,0 +1,92 @@
+[
+    {
+        "marca": "fiat",
+        "modello": "500",
+        "alimentazione": "benzina",
+        "colore": "rosso"
+    },
+    {
+        "marca": "fiat",
+        "modello": "500",
+        "alimentazione": "diesel",
+        "colore": "nero"
+    },
+    {
+        "marca": "fiat",
+        "modello": "panda",
+        "alimentazione": "benzina",
+        "colore": "bianco"
+    },
+    {
+        "marca": "fiat",
+        "modello": "panda",
+        "alimentazione": "hybrid",
+        "colore": "grigio"
+    },
+    {
+        "marca": "ford",
+        "modello": "fiesta",
+        "alimentazione": "benzina",
+        "colore": "blu"
+    },
+    {
+        "marca": "ford",
+        "modello": "fiesta",
+        "alimentazione": "diesel",
+        "colore": "grigio"
+    },
+    {
+        "marca": "ford",
+        "modello": "focus",
+        "alimentazione": "benzina",
+        "colore": "nero"
+    },
+    {
+        "marca": "audi",
+        "modello": "a1",
+        "alimentazione": "benzina",
+        "colore": "rosso"
+    },
+    {
+        "marca": "audi",
+        "modello": "a1",
+        "alimentazione": "diesel",
+        "colore": "bianco"
+    },
+    {
+        "marca": "audi",
+        "modello": "a3",
+        "alimentazione": "hybrid",
+        "colore": "blu"
+    },
+    {
+        "marca": "volkswagen",
+        "modello": "polo",
+        "alimentazione": "benzina",
+        "colore": "nero"
+    },
+    {
+        "marca": "volkswagen",
+        "modello": "golf",
+        "alimentazione": "diesel",
+        "colore": "grigio"
+    },
+    {
+        "marca": "peugeot",
+        "modello": "208",
+        "alimentazione": "benzina",
+        "colore": "rosso"
+    },
+    {
+        "marca": "peugeot",
+        "modello": "308",
+        "alimentazione": "hybrid",
+        "colore": "blu"
+    },
+    {
+        "marca": "renault",
+        "modello": "clio",
+        "alimentazione": "benzina",
+        "colore": "giallo"
+    }
+]

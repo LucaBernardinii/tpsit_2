@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ricerca Auto - AJAX</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Ricerca Auto Usate</h1>
+    
+    <form>
+        <p>
+            Marca: 
+            <input type="text" id="marca" placeholder="Es: fiat, ford, audi">
+        </p>
+        
+        <p>
+            Modello: 
+            <input type="text" id="modello" placeholder="Es: 500, fiesta, a1">
+        </p>
+        
+        <p>
+            Alimentazione: 
+            <input type="text" id="alimentazione" placeholder="Es: diesel, benzina, hybrid">
+        </p>
+        
+        <p>
+            Colore: 
+            <input type="text" id="colore" placeholder="Es: rosso, nero, blu">
+        </p>
+        
+        <button type="button" onclick="cercaAuto()">Cerca Auto</button>
+    </form>
+    
+    <div id="risultati"></div>
+    
+    <script>
+        function cercaAuto() {
+            var marca = document.getElementById("marca").value;
+            var modello = document.getElementById("modello").value;
+            var alimentazione = document.getElementById("alimentazione").value;
+            var colore = document.getElementById("colore").value;
+            
+            if (window.XMLHttpRequest) {
+                xmlhttp = new XMLHttpRequest();
+            }
+            else {
+                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var risposta = JSON.parse(xmlhttp.responseText);
+                    mostraRisultati(risposta);
+                }
+            }
+            
+            var parametri = "marca=" + marca + "&modello=" + modello + "&alimentazione=" + alimentazione + "&colore=" + colore;
+            xmlhttp.open("GET", "/cerca?"+parametri, true);
+            xmlhttp.send();
+        }
+        
+        function mostraRisultati(auto) {
+            var html = "";
+            
+            if (auto.length == 0) {
+                html = "<p>Nessun auto trovata.</p>";
+            }
+            else {
+                html = "<table border='1'>";
+                html += "<tr><th>Marca</th><th>Modello</th><th>Alimentazione</th><th>Colore</th></tr>";
+                
+                for (var i = 0; i < auto.length; i++) {
+                    html += "<tr>";
+                    html += "<td>" + auto[i].marca + "</td>";
+                    html += "<td>" + auto[i].modello + "</td>";
+                    html += "<td>" + auto[i].alimentazione + "</td>";
+                    html += "<td>" + auto[i].colore + "</td>";
+                    html += "</tr>";
+                }
+                
+                html += "</table>";
+            }
+            
+            document.getElementById("risultati").innerHTML = html;
+        }
+    </script>
+</body>
+</html>
