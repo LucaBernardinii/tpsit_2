@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nome": "Mario",
+    "cognome": "Rossi",
+    "data_nascita": "1990-05-15",
+    "mansione": "Senior Full-Stack Developer"
+  },
+  {
+    "id": 2,
+    "nome": "Anna",
+    "cognome": "Bianchi",
+    "data_nascita": "1992-03-22",
+    "mansione": "Designer"
+  },
+  {
+    "id": 3,
+    "nome": "Giovanni",
+    "cognome": "Verdi",
+    "data_nascita": "1988-07-10",
+    "mansione": "Project Manager"
+  }
+]
